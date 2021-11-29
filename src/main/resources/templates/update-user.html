@@ -42,7 +42,7 @@
     <select class="form-select" th:field="*{roles}" multiple aria-label="multiple select" id="newRoles">
         <option th:each="role : ${allRoles}"
                 th:text="${role.getRole()}"
-                th:value="${role.getRole()}">
+                th:value="${role.getId()}">
     </select>
     <br/>
     <br/>
