@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,52 +35,62 @@ public class UserServiceImpl implements UserService {
     @PostConstruct
     private void postConstruct() {
 
-        if(roleRepository.findByRole("ROLE_USER") == null) {
-            Role role_user = new Role("ROLE_USER");
-            roleRepository.save(role_user);
-        }
-
-        if(roleRepository.findByRole("ROLE_ADMIN") == null) {
-            Role role_user = new Role("ROLE_ADMIN");
-            roleRepository.save(role_user);
-        }
-
-        if(userRepository.findByUsername("user") == null) {
+        if (userRepository.findByEmail("user@user.com") == null) {
             User user = new User();
-            user.setUsername("user");
-            user.setPassword("$2a$12$uiRlDZshsSDsmBGGAYtXReQDUGsVQIgkDCKd7QSdlT/iI5QRXR9Vi");
-            user.setName("User_name");
-            user.setSurname("User_surname");
+            user.setName("User");
+            user.setSurname("User");
             user.setAge(11);
             user.setEmail("user@user.com");
+            user.setPassword("$2a$12$uiRlDZshsSDsmBGGAYtXReQDUGsVQIgkDCKd7QSdlT/iI5QRXR9Vi");
+            if (roleRepository.findByRole("ROLE_USER") == null) {
+                Role role_user = new Role("ROLE_USER");
+                roleRepository.save(role_user);
+            }
             Role roleUser = roleRepository.findByRole("ROLE_USER");
             user.addRole(roleUser);
             userRepository.save(user);
         }
-        if(userRepository.findByUsername("admin") == null) {
+
+        if (userRepository.findByEmail("admin@admin.com") == null) {
             User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword("$2a$12$i.jqnF7TZB7F1.3E7ui64uo7QkKgFGThkJE/7bKHQT9GSzbbWyWNa");
-            admin.setName("Admin_name");
-            admin.setSurname("Admin_surname");
+            admin.setName("Admin");
+            admin.setSurname("Admin");
             admin.setAge(22);
             admin.setEmail("admin@admin.com");
+            admin.setPassword("$2a$12$i.jqnF7TZB7F1.3E7ui64uo7QkKgFGThkJE/7bKHQT9GSzbbWyWNa");
+            if (roleRepository.findByRole("ROLE_ADMIN") == null) {
+                Role role_admin = new Role("ROLE_ADMIN");
+                roleRepository.save(role_admin);
+            }
+            if (roleRepository.findByRole("ROLE_USER") == null) {
+                Role role_user = new Role("ROLE_USER");
+                roleRepository.save(role_user);
+            }
             Role roleAdmin = roleRepository.findByRole("ROLE_ADMIN");
             admin.addRole(roleAdmin);
+            Role roleUser = roleRepository.findByRole("ROLE_USER");
+            admin.addRole(roleUser);
             userRepository.save(admin);
         }
     }
 
 
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByEmail(String username) {
+        return userRepository.findByEmail(username);
     }
+
+    @Override
+    public Set<Role> getAllRoles() {
+        List<Role> listRoles = roleRepository.findAll();
+        return listRoles.stream().collect(Collectors.toSet());
+    }
+
 
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
+        User user = findByEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
@@ -98,7 +109,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
@@ -112,4 +123,11 @@ public class UserServiceImpl implements UserService {
     public void deleteById(Long id) {
         userRepository.deleteById(id);
    }
+
+
+    @Override
+    public Role getRoleUser() {
+        return roleRepository.findByRole("ROLE_USER");
+   }
+
 }

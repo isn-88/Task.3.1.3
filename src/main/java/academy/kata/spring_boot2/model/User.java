@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,20 +19,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
-
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="users_roles",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="role_id"))
-    private Set<Role> roles = new HashSet<>();
-
-
     @Column(name = "name")
     private String name;
 
@@ -41,34 +28,35 @@ public class User implements UserDetails {
     @Column(name = "age")
     private int age;
 
-    @Column(name = "email")
+    @Column(name = "email",unique=true,nullable = false)
     private String email;
+
+    @Column(name = "password")
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="users_roles",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id"))
+    private Set<Role> roles = new HashSet<>();
 
 
 
     public User() {
     }
 
-    public User(String username, String password, String name, String surname, int age, String email) {
-        this.username = username;
-        this.password = password;
+    public User( String name, String surname, int age, String email, String password) {
         this.name = name;
         this.surname = surname;
         this.age = age;
         this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public void setId(long id) {
         this.id = id;
@@ -102,6 +90,10 @@ public class User implements UserDetails {
         return email;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -119,14 +111,14 @@ public class User implements UserDetails {
     }
 
     public String getAllRolesToString() {
-        return roles.stream().map(Role::getRole).collect(Collectors.joining("; "));
+        return roles.stream().map(Role::getRoleWithoutPrefix).collect(Collectors.joining(" "));
     }
+
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", age=" + age +
@@ -146,7 +138,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
@@ -169,5 +161,9 @@ public class User implements UserDetails {
         return true;
     }
 
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles.stream().collect(Collectors.toSet());
+    }
 }
 

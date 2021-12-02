@@ -14,12 +14,16 @@ import javax.persistence.*;
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "role")
+    @Column(name = "role",unique=true,nullable = false)
     private String role;
+
+    @Transient
+    private final String ROLE_PREFIX = "ROLE_";
 
     public Role() {
     }
@@ -49,6 +53,10 @@ public class Role implements GrantedAuthority {
         return role;
     }
 
+    public String getRoleWithoutPrefix() {
+        return role.replaceFirst('^' + ROLE_PREFIX, "");
+    }
+
     public void setRole(String role) {
         this.role = role;
     }
@@ -62,7 +70,7 @@ public class Role implements GrantedAuthority {
     public String toString() {
         return "Role{" +
                 "id=" + id +
-                ", role='" + role + '\'' +
+                ", role='" + getRoleWithoutPrefix() +
                 '}';
     }
 }
