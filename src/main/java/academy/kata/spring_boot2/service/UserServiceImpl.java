@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -116,6 +117,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        for (Role r : user.getRoles()) {
+            Role findRole = roleRepository.findByRole(r.getRole());
+            if (findRole != null) {
+                roles.add(findRole);
+            }
+        }
+        user.setRoles(roles);
         userRepository.save(user);
     }
 
@@ -124,10 +133,5 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
    }
 
-
-    @Override
-    public Role getRoleUser() {
-        return roleRepository.findByRole("ROLE_USER");
-   }
 
 }

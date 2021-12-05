@@ -111,7 +111,7 @@ public class User implements UserDetails {
     }
 
     public String getAllRolesToString() {
-        return roles.stream().map(Role::getRoleWithoutPrefix).collect(Collectors.joining(" "));
+        return roles.stream().map(Role::getRole).collect(Collectors.joining(" "));
     }
 
 
@@ -162,8 +162,5 @@ public class User implements UserDetails {
     }
 
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles.stream().collect(Collectors.toSet());
-    }
 }
 

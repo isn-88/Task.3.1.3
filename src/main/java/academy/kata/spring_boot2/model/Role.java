@@ -22,8 +22,8 @@ public class Role implements GrantedAuthority {
     @Column(name = "role",unique=true,nullable = false)
     private String role;
 
-    @Transient
-    private final String ROLE_PREFIX = "ROLE_";
+    //@Transient
+    //private final String ROLE_PREFIX = "ROLE_";
 
     public Role() {
     }
@@ -53,9 +53,9 @@ public class Role implements GrantedAuthority {
         return role;
     }
 
-    public String getRoleWithoutPrefix() {
-        return role.replaceFirst('^' + ROLE_PREFIX, "");
-    }
+//    public String getRoleWithoutPrefix() {
+//        return role.replaceFirst('^' + ROLE_PREFIX, "");
+//    }
 
     public void setRole(String role) {
         this.role = role;
@@ -70,7 +70,7 @@ public class Role implements GrantedAuthority {
     public String toString() {
         return "Role{" +
                 "id=" + id +
-                ", role='" + getRoleWithoutPrefix() +
+                ", role='" + getRole() +
                 '}';
     }
 }
